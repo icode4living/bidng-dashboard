@@ -1,0 +1,16 @@
+service: bidng-dashboard
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  memorySize: 512
+  timeout: 10
+
+plugins:
+  - serverless-next.js
+
+custom:
+  serverless-nextjs:
+    enableS3: true
+    enableLambdaAtEdge: true

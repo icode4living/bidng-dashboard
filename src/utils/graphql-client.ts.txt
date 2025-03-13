@@ -1,0 +1,113 @@
+import { ApolloClient, InMemoryCache, split, HttpLink, gql,useMutation } from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
+
+// HTTP Link
+const httpLink = new HttpLink({ uri: 'http://localhost:5050/graphql',
+  
+  headers:{
+    'x-api-key': 's3/24HiBtJ7h7aNqRlnAFg==',//JSON.stringify(process.env.NEXT_PUBLIC_API_KEY )
+"Content-Type": "application/json"
+  }
+ },
+);
+
+// WebSocket Link
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: 'ws://localhost:3000/graphql',
+  
+  })
+);
+
+// Split links for queries/mutations and subscriptions
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink
+);
+
+// Apollo Client instance
+const client = new ApolloClient({
+  link: splitLink,
+  cache: new InMemoryCache(),
+});
+
+// GraphQLHelper class
+class GraphQLHelper {
+  static clients = client;
+
+  /**
+   * Execute a GraphQL query
+   * @param {string} query - The GraphQL query string
+   * @param {object} variables - Variables for the query
+   * @returns {Promise<any>} - Resolves to the query result
+   */
+  static async executeQuery(query: any, variables = {}) {
+    try {
+      const result = await this.clients.query({
+        query: gql`${query}`,
+        variables,
+      });
+      return result.data;
+    } catch (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Execute a GraphQL mutation
+   * @param {string} mutation - The GraphQL mutation string
+   * @param {object} variables - Variables for the mutation
+   * @returns {Promise<any>} - Resolves to the mutation result
+   */
+  static async executeMutation(mutation: any, variables: object = {}): Promise<any> {
+    try {
+      const result = await this.clients.mutate({
+        mutation: gql`${mutation}`,
+        variables,
+      });
+      return result.data;
+    } catch (error) {
+      console.error('Error executing mutation:', error);
+      throw error;
+    }
+  }
+ 
+
+  /**
+   * Subscribe to a GraphQL subscription
+   * @param {string} subscription - The GraphQL subscription string
+   * @param {object} variables - Variables for the subscription
+   * @param {function} callback - Callback for subscription events
+   * @returns {function} - Unsubscribe function
+   */
+  static subscribe(subscription: any, variables = {}, callback: (arg0: any) => void) {
+    try {
+      const observable = this.clients.subscribe({
+        query: gql`${subscription}`,
+        variables,
+      });
+
+      const subscriptionHandler = observable.subscribe({
+        next: ({ data }) => callback(data),
+        error: (error) => console.error('Subscription error:', error),
+      });
+
+      return () => subscriptionHandler.unsubscribe();
+    } catch (error) {
+      console.error('Error starting subscription:', error);
+      throw error;
+    }
+  }
+}
+
+export default GraphQLHelper;

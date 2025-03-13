@@ -1,0 +1,21 @@
+import { Suspense, useEffect, useState } from "react";
+import OrderDetails from "../../components/OrderDetails";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
+
+export default async function OrderDetailPage({params}: {params: {order_Id: string }}) {
+
+   //const order_id  = await params
+
+console.log(params.order_Id)
+
+    return(
+        <>
+       <Suspense fallback="Getting data..">
+<DefaultLayout>
+<OrderDetails id={params.order_Id} />
+</DefaultLayout>
+
+       </Suspense>
+        </>
+    )
+}

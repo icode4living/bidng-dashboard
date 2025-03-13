@@ -1,0 +1,20 @@
+import  { NextRequest,NextResponse } from 'next/server';
+import { getIronSession } from "iron-session";
+import { SessionData } from '@/types/session';
+import { sessionOptions } from '@/utils/session-helper';
+import { cookies } from "next/headers";
+import SessionHelper from '@/utils/session-helper';
+
+
+export async function middleware(request:NextRequest) {
+  /*const  session = await getIronSession<SessionData>(cookies(),{ password: JSON.stringify(process.env.SESSION_SECRET), 
+    cookieName: JSON.stringify(process.env.COOKIE_NAME)});*/
+    const session = await SessionHelper.getSessionData(request, NextResponse)
+  if  (/*request.nextUrl.pathname.startsWith('/dashboard')&&*/!session.isLoggedIn){
+    return NextResponse.rewrite(new URL('/auth/signin', request.url))  }
+}
+ 
+  
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+}

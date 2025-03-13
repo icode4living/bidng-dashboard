@@ -1,0 +1,156 @@
+'use client'
+import React, { useState, useEffect } from "react";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.css";
+import Select from "../ui/Form/Select";
+import Input from "../ui/Form/Input";
+import Loader from "@/components/common/Loader";
+import { ApolloClient, InMemoryCache, ApolloProvider, useMutation, gql } from "@apollo/client";
+import DefaultLayout from "../Layouts/DefaultLayout";
+
+
+
+// ✅ Auction Form Component
+const AuctionForm: React.FC = () => {
+  // ✅ GraphQL Client
+const client = new ApolloClient({
+  uri: "http://localhost:3001",
+  cache: new InMemoryCache(),
+  headers: {
+    "x-api-key": "s3/24HiBtJ7h7aNqRlnAFg==",
+  },
+});
+
+// ✅ GraphQL Mutation
+const CREATE_AUCTION_MUTATION = gql`
+  mutation CreateAuction($input: AuctionInput!) {
+    createAuction(input: $input) {
+      id
+      title
+      description
+      startPrice
+      category
+      startDate
+      image
+      expiresAt
+      isPremium
+    }
+  }
+`;
+
+// ✅ Fixed Date Picker Component
+const DatePickerOne = ({ label, value, onChange }: { label: string; value: string; onChange: (date: string) => void }) => {
+  const datePickerRef = React.useRef<HTMLInputElement | null>(null);
+  const flatpickrInstance = React.useRef<flatpickr.Instance | null>(null);
+
+  useEffect(() => {
+    if (!datePickerRef.current) return;
+
+    // Initialize flatpickr only once
+    flatpickrInstance.current = flatpickr(datePickerRef.current, {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      onChange: ([date]) => onChange(date.toISOString()),
+    });
+
+    // Cleanup function to destroy flatpickr on unmount
+    return () => {
+      if (flatpickrInstance.current) {
+        flatpickrInstance.current.destroy();
+        flatpickrInstance.current = null;
+      }
+    };
+  }, [onChange]);
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">{label}</label>
+      <input ref={datePickerRef} className="form-datepicker w-full border px-3 py-2 rounded-md" placeholder="YYYY-MM-DD HH:MM" defaultValue={value} />
+    </div>
+  );
+};
+  const [title, setTitle] = useState<string>("");
+  const [image, setImage] = useState<string>("");
+  const [isPremium, setIsPremium] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
+  const [startPrice, setStartPrice] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [expireAtDate, setExpireAtDate] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+
+  const categories = [
+    { value: "electronics", label: "Electronics" },
+    { value: "fashion", label: "Fashion" },
+    { value: "home", label: "Home" },
+  ];
+
+  // ✅ Handle Form Submission
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setLoading(true);
+    const [addAuction] = useMutation(CREATE_AUCTION_MUTATION);
+    try {
+      const variables = {
+        input: {
+          title,
+          description,
+          isPremium,
+          startPrice: parseFloat(startPrice),
+          category,
+          startDate: new Date(startDate).toISOString(),
+          expiresAt: new Date(expireAtDate).toISOString(),
+          image,
+        },
+      };
+
+      await addAuction({ variables });
+      alert("Auction Created Successfully!");
+    } catch (err) {
+      console.error("Error creating auction:", err);
+      alert("Failed to create auction. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    
+    <ApolloProvider client={client}>
+      <div className="space-y-12 bg-white shadow-sm space-x-4 dark:bg-boxdark dark:text-white">
+        <form onSubmit={handleSubmit} className="p-8">
+          <div className="grid grid-cols-2 gap-2">
+            <Input label="Title" name="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter auction title" />
+            <Input label="Description" name="description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter auction description" />
+            <Input label="Start Price" name="start_price" type="number" value={startPrice} onChange={(e) => setStartPrice(e.target.value)} placeholder="Enter starting price" />
+            <Select label="Category" options={categories} value={category} onChange={(e) => setCategory(e.target.value)} />
+          </div>
+
+          <Input label="Image" name="image" type="text" value={image} onChange={(e) => setImage(e.target.value)} placeholder="Enter image URL" />
+
+          <div className="mb-4 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+            <DatePickerOne label="Start Date" value={startDate} onChange={setStartDate} />
+            <DatePickerOne label="Expire At" value={expireAtDate} onChange={setExpireAtDate} />
+          </div>
+
+          <div>
+            <label htmlFor="checkboxLabelOne" className="flex cursor-pointer select-none items-center">
+              <input type="checkbox" id="checkboxLabelOne" className="sr-only" onChange={() => setIsPremium(!isPremium)} />
+              <span className={`ml-2 ${isPremium ? "text-primary" : ""}`}>Premium Auction?</span>
+            </label>
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <button type="submit" className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90" disabled={loading}>
+              {loading ? <Loader /> : "Submit"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </ApolloProvider>
+    
+  );
+}
+
+export default AuctionForm;
