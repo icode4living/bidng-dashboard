@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     // Retrieve session using Iron Session
     const session = await getIronSession<SessionData>(request, res, sessionOptions);
 
-    // Ensure session persists
+    // Ensure session persist
     if (!session.isLoggedIn) {
         return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
