@@ -34,7 +34,7 @@ const [loading, setLoading] = useState(false);
     { value: "read:auction", label: "Read Auction" },
     { value: "write:auction", label: "Create Auction" },
     { value: "delete:auction", label: "Delete Auction" },
-    { value: "write:voucher", label: "Create Voucher" },
+    { value: "create:voucher", label: "Create Voucher" },
 
   ];
 //write:voucher

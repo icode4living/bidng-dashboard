@@ -15,7 +15,7 @@ console.log(req.body)
 
 const Id = req.body.id
 const permissions = req.body.permision
-console.log(permission)
+console.log(apiKey)
 const apiClient = new ApiClient(baseURL!,apiKey, session.token);
 try{
  const response =await apiClient.putRequest(`/admin/update-user/${Id}`,{

@@ -120,6 +120,7 @@ const AdminVoucher = () => {
 
 <TextField 
   label="Enter OTP" 
+  type="password"
   value={otp} 
   onChange={(e) => setOtp(e.target.value)} 
   onKeyDown={(e) => e.preventDefault()} // Prevents physical keyboard input

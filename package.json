@@ -46,6 +46,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.3.5",
     "react-select": "^5.10.0",
+    "save": "^2.9.0",
     "styled-components": "^6.1.14",
     "use-debounce": "^10.0.4",
     "web-push": "^3.6.7"
