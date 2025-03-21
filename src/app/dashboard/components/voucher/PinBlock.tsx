@@ -135,9 +135,10 @@ const AdminVoucher = () => {
               </Grid>
             ))}
           </Grid>
-          <Button variant="contained" onClick={() => setOtp(otp.slice(0, -1))} fullWidth style={{ marginTop: 10, backgroundColor:'red' }}>Delete</Button>
 
           <Button variant="contained" onClick={validateOtp} fullWidth style={{ marginTop: 10 }}>{sending ? "Please wait ..." :"Validate OTP"}</Button>
+          <Button variant="contained" onClick={() => setOtp(otp.slice(0, -1))} fullWidth style={{ marginTop: 10, backgroundColor:'red' }}>Delete</Button>
+
         </div>
         </>
       ) : (
@@ -221,7 +222,7 @@ const AdminVoucher = () => {
           </FormControl>
           </div>
           <div className="mt-4">
-      <DatePickerOne label="Start Date" value={expiresAt} onChange={setExpiresAt} />
+      <DatePickerOne label="Expire Date" value={expiresAt} onChange={setExpiresAt} />
 
       </div>
           <Button variant="contained" onClick={handleSubmit} fullWidth style={{ marginTop: 10 }}>{sending?"Please wait...":"Generate Voucher"}</Button>

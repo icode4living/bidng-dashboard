@@ -59,7 +59,7 @@ function convertToISO(datetime:string) {
   console.log(voucherData)
 return(
             <DefaultLayout>
-      <Breadcrumb pageName="Transaction Report" />
+      <Breadcrumb pageName="Voucher Report" />
 
 <div >
     <div className="max-w-md p-8 border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
