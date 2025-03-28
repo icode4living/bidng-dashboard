@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { console } from "node:inspector";
 class ApiClient{
 private apiClient: AxiosInstance;
 
@@ -13,13 +14,26 @@ private apiClient: AxiosInstance;
             }
 
         });
+        console.log(this.apiClient)
+
     }
 
     async postRequest(url:string, payload:object):Promise<any|null>{
-        const response = await this.apiClient.post(url,payload);
-        if(response.status !==200 || 201) //throw new Error(`API_ERROR: ${response.status}`)
+       try{ const response = await this.apiClient.post(url,payload);
+        console.log(response)
+
+        if(response.status ==200 || 201){ //throw new Error(`API_ERROR: ${response.status}`)
         console.log(response)
         return response
+      }
+      else{
+        return response
+      }
+    }
+    catch(e){
+      console.log(`Request Error: ${e}`)
+      return e
+    }
     }
     async putRequest(url:string, payload:object):Promise<any|null>{
         const response = await this.apiClient.put(url,payload);

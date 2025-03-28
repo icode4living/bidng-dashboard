@@ -87,10 +87,11 @@ const AdminVoucher = () => {
         appliesTo:voucherType,
         value:parseFloat(value!)
     }).then((resp)=>{
-      alert(resp.message)
+      alert("Token sent")
       setSending(false)
     }).catch((err)=>{
-      console.log(err)
+      alert("Session Expired!")
+     // console.log(err)
 
     })
   };

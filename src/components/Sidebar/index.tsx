@@ -203,7 +203,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Settings",
-        route: "#",
+     route: "#",
         children: [
           {label:"Manage Categories",
             route:"/dashboard/settings/create-category"

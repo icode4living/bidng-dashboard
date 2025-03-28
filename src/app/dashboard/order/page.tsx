@@ -12,8 +12,8 @@ import { DateTime } from "luxon";
 
 
 const GET_ALL_ORDER = gql`
-  query GetAllOrder {
-    getAllOrder {
+  query GetAllOrder($startDate:String, $endDate:String) {
+    getAllOrder(startDate:$startDate, endDate:$endDate) {
         id
         amount
         name
@@ -49,8 +49,10 @@ function convertToISO(datetime: string): string {
 
        graphqlHelper.executeQuery(GET_ALL_ORDER,{startDate,endDate})
       .then((data: any)=>{
+        console.log(data)
         setData(data);
         setLoading(false)
+
 
       })
     } catch (error) {
