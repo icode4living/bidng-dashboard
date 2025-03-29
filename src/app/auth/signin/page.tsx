@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn } from "next-auth/react"; // ✅ Import NextAuth signIn
 import Loader from "@/components/common/Loader";
 
 const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // ✅ Use Next.js router for client-side navigation
+  const router = useRouter();
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,18 +19,17 @@ const SignIn: React.FC = () => {
     const password = formData.get("password") as string;
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false, // Prevent NextAuth from auto-redirecting
       });
 
-      if (response.ok) {
-        // ✅ Redirect user to dashboard after successful login
-        router.push("/dashboard");
+      if (result?.error) {
+        console.log(result?.error)
+        alert(result.error || "Invalid username or password");
       } else {
-        const data = await response.json();
-        alert(data.message || "Invalid username or password");
+        router.push("/dashboard"); // ✅ Redirect on success
       }
     } catch (error) {
       console.error("Login error:", error);

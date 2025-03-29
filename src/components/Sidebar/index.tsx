@@ -135,7 +135,6 @@ const menuGroups = [
         label: "Transactions",
         route: "#",
         children: [
-          { label: "Ticket", route: "/dashboard/ticket" },
           { label: "Payment", route: "/dashboard/payment-report" },
         ],
       },
@@ -205,17 +204,20 @@ const menuGroups = [
         label: "Settings",
      route: "#",
         children: [
-          {label:"Manage Categories",
+          {label:"Create Categories",
             route:"/dashboard/settings/create-category"
           },
           {label:"Create Message",
             route:"/dashboard/settings/message"
           },
-          {label:"Auction",
+          {label:"Create Auction",
             route:"/dashboard/settings/auction"
           },
-          {label:"Voucher",
+          {label:"Create Voucher",
             route:"/dashboard/settings/voucher"
+          },
+          {label:"User Setting",
+            route:"/dashboard/settings/user-setting"
           }
         ],
       },

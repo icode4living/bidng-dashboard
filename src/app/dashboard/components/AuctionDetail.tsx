@@ -78,13 +78,40 @@ export default function AuctionDetail({id}:{id:string}){
             axios.post('/api/delete-auction',{
     
                 auctionId:id
-            }).then(()=>{
-                alert('Auction deleted')
-                location.replace('/dashboard/auction')
-                setDelete(true)
+            }).then((resp)=>{
+              switch (resp.status){
+                case  401:
+                  alert(resp.data.message)
+                  setDelete(false)
+      
+                  location.replace("/auth/signin");
+                  return
+                case 200:
+                  alert(resp.data.message);
+                  setDelete(false)
+                  location.replace(`/dashboard/auction`)
+                  return
+                case 500:
+      
+                  alert(resp.data.message);
+                  setDelete(false)
+      
+                  return
+                case 403:
+                  alert("Unauthorized")  
+                  setDelete(false)
+      
+                  return
+                default:
+                  alert("Operation not permitted for user");
+                  setDelete(false)
+      
+                  break;
+              }
     
             }).catch((err)=>{
                 alert("Operation falied")
+                setDelete(false)
     console.log(err)
             })
         }
@@ -107,23 +134,54 @@ setLoading(true)
             id:auctionId,
             variables
         })
-        if(resp.status===401){
+        switch (resp.status){
+          case  401:
+            alert(resp.data.message)
+            setLoading(false)
+
+            location.replace("/auth/signin");
+            return
+          case 200:
+            alert(resp.data.message);
+            setLoading(false)
+
+            return
+          case 500:
+
+            alert(resp.data.message);
+            setLoading(false)
+
+            return
+          case 403:
+            alert("Unauthorized")  
+            setLoading(false)
+
+            return
+          default:
+            alert("Operation not permitted for user");
+            setLoading(false)
+
+            break;
+        }
+       /* if(resp.status===401){
             //TODO: direct user to logout page
             alert("Invalid session")
             location.replace("/auth/signin");
             return
         }
         alert("Auction Update Successful");
-        setLoading(false)
+        setLoading(false)*/
 
     }
     catch(err){
         console.log(err)
-alert("Internal Server error")
+alert(err?.message)
+//location.replace("/auth/signin");
+
 
 setLoading(false)
 //location.replace("/auth/signin");
-
+return
     }
 }    
 

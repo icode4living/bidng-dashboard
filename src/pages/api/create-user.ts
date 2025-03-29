@@ -1,5 +1,6 @@
 import ApiClient from '@/utils/api-client';
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
 import SessionHelper from '@/utils/session-helper';
 import { idID } from '@mui/material/locale';
 import axios from 'axios';
@@ -10,16 +11,24 @@ export default async function login(
     res: NextApiResponse,) {
  const apiKey = process.env.API_KEY
 const baseURL = process.env.API_BASE_URL
-const session = await SessionHelper.getSessionData(req, res)
+//const session = await SessionHelper.getSessionData(req, res)
 console.log(req.body)
 const {email, phone, name,permission} = req.body
-const apiClient = new ApiClient(baseURL!,apiKey, session.token);
+//const apiClient = new ApiClient(baseURL!,apiKey, session.token);
 try{
+    const session = await getServerSession(req, res, authOptions);
+    if (!session || !session.user?.token) {
+        return res.status(401).json({ error: "Unauthorized. Redirecting to login..." });
+      }
+      const apiClient = new ApiClient(baseURL!,apiKey, session.user.token);
+
+    const PASSWORD= generateStrongPassword(8)
  const response =await apiClient.postRequest(`/auth/create-admin-user`,{
     email,
     phone,
 name,
     permission,
+    password:PASSWORD
  });
 
 

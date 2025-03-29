@@ -1,13 +1,9 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
-import { gql } from "@/__generated__/gql";
-import { useMutation } from "@apollo/client";
-import dynamic from "next/dynamic";
-import Select from "@/components/ui/Form/Select";
-import AuctionForm from "@/app/dashboard/components/form/AuctionForm";
+import React, { Suspense } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import CategoryForm from "@/app/dashboard/components/form/CategoryForm";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 
 
@@ -18,6 +14,8 @@ const Auction: React.FC = () => {
 return(
 <DefaultLayout>
   <Suspense>
+  <Breadcrumb pageName='Create Category' />
+
   <CategoryForm/>
   </Suspense>
           </DefaultLayout>

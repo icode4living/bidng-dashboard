@@ -1,8 +1,5 @@
 "use client";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
 import { useEffect, useState } from "react";
-import Select from "@/components/ui/Form/Select";
 import Loader from "@/components/common/Loader";
 import { useDropzone } from "react-dropzone";
 import { gql } from "@apollo/client";
@@ -22,6 +19,7 @@ mutation createCategory(
     ) {
       id
       name
+      createdAt
     }
   }
 `;
@@ -30,13 +28,14 @@ query GetCategory {
     getCategory {
         id
         name
+        createdAt
     }
     }`;
 const AuctionFormOne = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setTitle] = useState<string>("");
   const [image, setImage] = useState<string>("");
-  
+  const [errorText, setErrorText] = useState<string>("")
   const [data, setData] = useState()
   async function getCategory() {
     const data = await graphqlHelper.executeQuery(GET_CATEGORY_TABLE)
@@ -64,6 +63,10 @@ getCategory()
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!name?.length) {
+      setErrorText("Please enter a unique title");
+      return
+    }
     setIsLoading(true);
 
     try {
@@ -80,6 +83,7 @@ getCategory()
       
       alert("Category Created Successfully!");
       setIsLoading(false);
+      location.reload()
     } catch (error) {
       console.error("Error creating auction:", error);
       alert("Error creating auction");
@@ -88,11 +92,11 @@ getCategory()
   };
 
   return (
-    <div className="mx-auto max-w-270">
+    <div className="container  p-4">
       {isLoading ? 
         <Loader />
        : 
-        <div className="grid grid-cols-5 gap-8">
+        <div className="mx-auto">
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
@@ -103,7 +107,7 @@ getCategory()
               <div className="p-7">
                 <form onSubmit={handleSubmit}>
                   {/* Title Input */}
-                  <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                  <div className="mb-5.5 block">
                     <div className="w-full sm:w-1/2">
                       <label
                         className="mb-3 block text-sm font-medium text-black dark:text-white"
@@ -119,7 +123,27 @@ getCategory()
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Enter auction title"
                       />
+                      <p className="text-pink-700 
+                      text-sm">
+                        {errorText}
+                      </p>
                     </div>
+                    <div className="w-full sm:w-1/2 mt-5">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="auctionTitle"
+                      >
+                        Image Upload
+                      </label>
+                      <div
+                  {...getRootProps()}
+                  className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray px-4 py-4 dark:bg-meta-4 sm:py-7.5"
+                >
+                  <input {...getInputProps()} placeholder="click to upload..." 
+                  required/>
+                  </div>
+                    </div>
+
 </div>
                     
 
@@ -150,6 +174,7 @@ getCategory()
           </div>
 
           {/* Image Upload Section */}
+          {/*
           <div className="col-span-5 xl:col-span-2">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
@@ -201,7 +226,6 @@ getCategory()
                   </div>
                 </div>
 
-                {/* Display Image Preview */}
                 {image && (
                   <div className="mt-4">
                     <img
@@ -212,16 +236,21 @@ getCategory()
                   </div>
                 )}
               </div>
+              
             </div>
           </div>
+          */}
         </div>
-      }
+        
+}
+        
+     
     </div>
+      
   );
-};
+        
+}
 
 export default AuctionFormOne;
 
-function setImage(arg0: string) {
-  throw new Error("Function not implemented.");
-}
+

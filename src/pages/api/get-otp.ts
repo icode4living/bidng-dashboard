@@ -1,6 +1,6 @@
 import ApiClient from '@/utils/api-client';
-
-import SessionHelper from '@/utils/session-helper';
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
 import type {NextApiRequest, NextApiResponse} from "next";
 
 export default async function getOtp(
@@ -8,15 +8,20 @@ export default async function getOtp(
     res: NextApiResponse,) {
  const apiKey = process.env.API_KEY
 const baseURL = process.env.API_BASE_URL
-const session = await SessionHelper.getSessionData(req, res)
 
-const apiClient = new ApiClient(baseURL!,apiKey, session.token);
 try{
+   const session = await getServerSession(req, res, authOptions);
+
+    if (!session || !session.user?.token) {
+        console.log("session error")
+        return res.status(401).json({ message: "Unauthorized: No session token" });
+    }
+    const apiClient = new ApiClient(baseURL!,apiKey, session!.user?.token);
+
  const response = await apiClient.postRequest(`/admin/requst-otp`,{
-    email:session.email,
+    email:session.user?.email,
     reason:"voucher"
  });
- console.log(session.email)
  if(response.status === 401){
     res.redirect('/auth/signin')
     }
