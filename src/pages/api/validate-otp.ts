@@ -23,7 +23,7 @@ try{
   }
   const apiClient = new ApiClient(baseURL!,apiKey, session.user?.token);
  const response =await apiClient.postRequest(`/admin/validate-otp`,{
-   userId:session.user,
+   userId:session.user.id,
    otp
  });
 
